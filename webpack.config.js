@@ -20,7 +20,7 @@ module.exports = {
   plugins: [
     new Translator({
       source: require('./test/language/ch/index'),
-      target: './tarnslated'
+      target: './test/language/tarnslated'
     })
   ]
 };
