@@ -29,7 +29,7 @@ function getSign (appid, secret, rand, query) {
 function requestTranslatedResult (params) {
   console.log(params)
   with (params) {
-    return axios.get(`http://api.fanyi.baidu.com/api/trans/vip/translate?q=${q}&from=zh&to=en&appid=${APPID}&salt=1435660288&sign=${sign}`)
+    return axios.get(`http://api.fanyi.baidu.com/api/trans/vip/translate?q=${q}&from=zh&to=cht&appid=${APPID}&salt=1435660288&sign=${sign}`)
   }
 }
 
@@ -48,10 +48,10 @@ async function translate (query, from, to) {
   return ret
 }
 
-let ret = translate('测试', 'zh', 'en').then(res => {
-  console.log(res);
-}).catch(err => console.log(err))
-console.log(ret)
+// let ret = translate('测试', 'zh', 'cht').then(res => {
+//   console.log(res);
+// }).catch(err => console.log(err))
+// console.log(ret)
 
 module.exports = translate
 
