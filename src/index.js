@@ -2,6 +2,7 @@ const { Compiler, Compilation } = require("webpack");
 const { getTranslatedResult } = require('./translator')
 const fs = require('fs');
 const path = require("path");
+const { writeFileRecursive } = require("./util");
 
 let result
 
@@ -49,8 +50,6 @@ class Translator {
           let asset = assets[key]
           content = asset.source()
           console.log(content)
-          content = content.replace("typeof define === 'function' && define.amd", "typeof define === 'function' && define.amd && define.cmd")
-            .replace('"function"==typeof define&&define.amd', '"function"==typeof define&&define.amd&&define.cmd')
         })
 
 
@@ -65,17 +64,20 @@ class Translator {
               return source().length
             }
           }
-
+          
           const dir = path.resolve(compiler.context, this.optings.target, './main.js')
-          setTimeout(() => {
-            console.log(dir)
-          }, 3000)
-          fs.writeFileSync(dir, `module.exports = ${JSON.stringify(res)}`, (err) => {
+          writeFileRecursive(dir, `module.exports = ${JSON.stringify(res)}`, (err) => {
             if (err) {
               return console.log('该文件不存在，重新创建失败！')
             }
-            console.log("文件不存在，已新创建")
+            console.log("翻译结果已导入")
           })
+
+          // fs.writeFileSync(dir, `module.exports = ${JSON.stringify(res)}`, (err) => {
+          //   if (err) {
+          //     return console.log('该文件不存在，重新创建失败！')
+          //   }
+          // })
 
           resolve()
         })

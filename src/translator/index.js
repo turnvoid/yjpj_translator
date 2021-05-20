@@ -69,7 +69,7 @@ function getTranslatedResult(source, origin, target) {
           for(let i = 0; i < rarr.length - 1; i+=2) {
             item.source[rarr[i]] = rarr[i+1]
           }
-          console.log(item.source);
+          // console.log(item.source);
         })
         resolve()
       })
@@ -89,7 +89,7 @@ function getTranslatedResult(source, origin, target) {
         for(let i = 0; i < rarr.length - 1; i+=2) {
           item.source[rarr[i]] = rarr[i+1]
         }
-        console.log(item.source);
+        // console.log(item.source);
       })
       resolve()
     })
