@@ -21,13 +21,13 @@ function mergeParams (params) {
 
 function getSign (appid, secret, rand, query) {
   let str = `${appid}${query}${rand}${secret}`
-  console.log(str)
+  // console.log(str)
   return md5(str)
 }
 
 
 function requestTranslatedResult (params) {
-  console.log(params)
+  // console.log(params)
   with (params) {
     return axios.get(`http://api.fanyi.baidu.com/api/trans/vip/translate?q=${q}&from=zh&to=cht&appid=${APPID}&salt=1435660288&sign=${sign}`)
   }

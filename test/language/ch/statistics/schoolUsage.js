@@ -8,6 +8,6 @@ module.exports = {
       num: '教师使用量',
       totalTeachersNum: '教师总数',
       rate: '使用率',
-      radar: '雷达图'
+      radar: '雷达图测试'
   }
 }

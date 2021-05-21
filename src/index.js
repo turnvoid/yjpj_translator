@@ -3,16 +3,18 @@ const { getTranslatedResult } = require('./translator')
 const fs = require('fs');
 const path = require("path");
 const { writeFileRecursive } = require("./util");
+const diff = require("./diff");
+const doPatch = require("./diff/patch");
 
 let result
 
 class Translator {
   constructor(optings) {
-    this.optings = optings
-    if (optings.source) {
-      // console.log(optings)
-      result = getTranslatedResult(optings.source)
+    if(optings || (optings = {})) {
+      optings.path = optings.path || 'translated'
+      optings.filename = './' + (optings.filename || 'main.js')
     }
+    this.optings = optings
   }
 
   /**
@@ -20,22 +22,36 @@ class Translator {
    * @param {Compiler} compiler 
    */
   apply(compiler) {
+    // 待解决：读取大文件，流
+    // 读取已有的文件，进而增量更新
+    const dir = path.resolve(compiler.context, this.optings.path, this.optings.filename)
+    let originSource = null
+    try {
+      let data = fs.readFileSync(dir, 'utf-8')
+      data = data.replace(/ /g, '').replace(/^module\.exports=/, '')
+      originSource = JSON.parse(data)
+    } catch(err) {
+      console.error(err);
+    }
+
+    // 如果存在源对象，则进行增量更新
+    if(originSource) {
+      const newSource = this.optings.source
+      if(!newSource || typeof newSource !== 'object') {
+        console.error('未指定翻译的对象');
+        return
+      }
+      const patchs = diff(originSource, this.optings.source)
+      result = doPatch(originSource, patchs)
+    } else if (optings.source) {
+      // console.log(optings)
+      result = getTranslatedResult(optings.source)
+    } else {
+      throw new Error('未指定翻译的对象')
+    }
+
     compiler.hooks.emit.tapPromise('MyTranslator', (compilation, callback) => {
-      console.log(compiler.context);
-      // directory to check if exists
-      // const dir = path.resolve(compiler.context, this.optings.target)
-      // // check if directory exists
-      // console.log(dir);
-      // fs.access(dir, (err) => {
-      //   if(err) {
-      //     fs.appendFileSync(dir, '{"data":[],"total":0}', 'utf-8', (err) => {
-      //       if (err) {
-      //         return console.log('该文件不存在，重新创建失败！')
-      //       }
-      //       console.log("文件不存在，已新创建");
-      //     })
-      //   }
-      // })
+      // console.log(compiler.context);
       
       return new Promise((resolve, reject) => {
         let outputfile = compilation.options.output.filename
@@ -56,7 +72,7 @@ class Translator {
         callback && callback()
 
         result.then(res => {
-          compilation.assets[`${this.optings.target}/main.js`] = {
+          compilation.assets[`${this.optings.path + this.optings.filename}`] = {
             source() {
               return `module.exports = ${JSON.stringify(res)}`
             },
@@ -65,19 +81,12 @@ class Translator {
             }
           }
           
-          const dir = path.resolve(compiler.context, this.optings.target, './main.js')
           writeFileRecursive(dir, `module.exports = ${JSON.stringify(res)}`, (err) => {
             if (err) {
               return console.log('该文件不存在，重新创建失败！')
             }
             console.log("翻译结果已导入")
           })
-
-          // fs.writeFileSync(dir, `module.exports = ${JSON.stringify(res)}`, (err) => {
-          //   if (err) {
-          //     return console.log('该文件不存在，重新创建失败！')
-          //   }
-          // })
 
           resolve()
         })

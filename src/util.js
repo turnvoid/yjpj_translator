@@ -15,15 +15,15 @@ function writeFileRecursive(path, buffer, callback) {
 
     fs.writeFile(path, buffer, err => {
       if(err) callback(err)  
-      setTimeout(() => {
-        console.log('---------------------');
-        console.log(path)
-        console.log('---------------------');
-        console.log(lastPath);
-        console.log('---------------------');
-        console.log(callback.toString());
-        callback(null)
-      }, 3000)
+      // setTimeout(() => {
+      //   console.log('---------------------');
+      //   console.log(path)
+      //   console.log('---------------------');
+      //   console.log(lastPath);
+      //   console.log('---------------------');
+      //   console.log(callback.toString());
+      //   callback(null)
+      // }, 3000)
       return callback(null)
     })
   })
