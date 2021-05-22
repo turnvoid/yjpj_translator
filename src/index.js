@@ -1,8 +1,8 @@
 const { Compiler, Compilation } = require("webpack");
-const { getTranslatedResult } = require('./translator')
+const { getTranslatedResult, getTranslatedSource } = require('./translator')
 const fs = require('fs');
 const path = require("path");
-const { writeFileRecursive } = require("./util");
+const { writeFileRecursive } = require("./utils/index");
 const diff = require("./diff");
 const doPatch = require("./diff/patch");
 
@@ -43,9 +43,10 @@ class Translator {
       }
       const patchs = diff(originSource, this.optings.source)
       result = doPatch(originSource, patchs)
-    } else if (optings.source) {
+    } else if (this.optings.source) {
       // console.log(optings)
-      result = getTranslatedResult(optings.source)
+      // result = getTranslatedResult(optings.source)
+      result = getTranslatedSource(this.optings.source)
     } else {
       throw new Error('未指定翻译的对象')
     }

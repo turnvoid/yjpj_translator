@@ -1,7 +1,9 @@
 const fs = require('fs')
 
+const arrayFlatten = require('./array-flatten')
+
 /**
- *  
+ *  递归创建文件
  * @param {String} path 
  * @param {Object} buffer 
  * @param {Function} callback 
@@ -15,20 +17,12 @@ function writeFileRecursive(path, buffer, callback) {
 
     fs.writeFile(path, buffer, err => {
       if(err) callback(err)  
-      // setTimeout(() => {
-      //   console.log('---------------------');
-      //   console.log(path)
-      //   console.log('---------------------');
-      //   console.log(lastPath);
-      //   console.log('---------------------');
-      //   console.log(callback.toString());
-      //   callback(null)
-      // }, 3000)
       return callback(null)
     })
   })
 }
 
 module.exports = {
-  writeFileRecursive
+  writeFileRecursive,
+  arrayFlatten
 }

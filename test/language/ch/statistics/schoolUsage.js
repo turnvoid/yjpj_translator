@@ -8,6 +8,13 @@ module.exports = {
       num: '教师使用量',
       totalTeachersNum: '教师总数',
       rate: '使用率',
-      radar: '雷达图测试'
+      radar: '雷达图测试',
+      table_content: {
+        created: '创建了',
+        updated: '更新了',
+        test: {
+          test: '测试'
+        }
+      }
   }
 }
