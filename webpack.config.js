@@ -1,12 +1,15 @@
 const path = require('path');
-const Translator = require('./src/index')
+// const Translator = require('./src/index')
+
+const A = require('./build/test/main')
+console.log(typeof A);
 
 module.exports = {
   mode: 'production',
-  entry: './src/index.js',
+  entry: './test/main.js',
   // devtool: 'source-map',
   output: {
-    path: path.resolve(__dirname, './dist'),
+    path: path.resolve(__dirname, './build/test'),
   },
   target: 'node',
   // node:{fs:'empty'},
