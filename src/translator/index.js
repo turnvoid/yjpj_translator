@@ -64,7 +64,6 @@ function getTranslatedSource (source) {
 }
 
 function mappingSource(source, arr, index = 0) {
-  // console.log(source, arr, '----------');
   let keys = Object.keys(source)
 
   for(let key of keys) {
@@ -73,7 +72,6 @@ function mappingSource(source, arr, index = 0) {
     }
     else {
       source[key] = arr[index++]
-      // console.log(source[key], arr[index - 1], '---', key);
     }
   }
 

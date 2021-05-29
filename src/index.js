@@ -1,4 +1,4 @@
-const { Compiler, Compilation } = require("webpack");
+const { Compiler } = require("webpack");
 const { getTranslatedSource } = require('./translator')
 const fs = require('fs');
 const path = require("path");
@@ -44,77 +44,30 @@ class Translator {
         console.error('未指定翻译的对象');
         return
       }
+
       const patchs = diff(originSource, this.optings.source)
-      let result = async () => doPatch(originSource, patchs)
-      console.log('result', result);
-    } else if (this.optings.source) { // 否则，只更新新对象
+      result = doPatch(originSource, patchs)
+
+    } else if (this.optings.source) {
+      // 否则，只更新新对象
       result = getTranslatedSource(this.optings.source)
     } else {
-      throw new Error('未指定翻译的对象')
+      console.error('未指定翻译的对象')
+      return
     }
-
-    // 初始化compilation
-    // compiler.hooks.thisCompilation.tap('CopyWebpackPlugin', (compilation) => {
-    //   // 添加资源的hooks
-    //   compilation.hooks.additionalAssets.tapAsync('CopyWebpackPlugin', async (cb) => {
-
-    //     // console.log(`${this.optings.path + this.optings.filename}`);
-    //     let res = await result
-    //     console.log(' ---', res);
-    //     const content = res || '123'
-    //     compilation.assets[`${this.optings.path + this.optings.filename}`] = {
-    //       // 文件大小
-    //       source() {
-    //         return JSON.stringify(content);
-    //       },
-    //       // 文件内容
-    //       size() {
-    //         return JSON.stringify(content).length;
-    //       }
-    //     }
-    //     compilation.emitAsset(`${this.optings.path + this.optings.filename}`, {
-    //       // 文件大小
-    //       source() {
-    //         return JSON.stringify(content);
-    //       },
-    //       // 文件内容
-    //       size() {
-    //         return JSON.stringify(content).length;
-    //       }
-    //     });
-    //     cb()
-
-    //     // result.then(res => {
-    //     //   compilation.assets[`${this.optings.path + this.optings.filename}`] = {
-    //     //     source () {
-    //     //       return `module.exports = ${JSON.stringify(res)}`
-    //     //     },
-    //     //     size () {
-    //     //       return source().length
-    //     //     }
-    //     //   }
-
-    //     //   writeFileRecursive(dir, `module.exports = ${JSON.stringify(res)}`, (err) => {
-    //     //     if (err) {
-    //     //       console.error('该文件不存在，重新创建失败！')
-    //     //       callback && callback(err)
-    //     //     }
-    //     //     console.log('翻译结果已导出');
-    //     //   })
-    //     // })
-    //   })
-    // })
 
     compiler.hooks.emit.tapAsync('yjpj_translator', (compilation, callback) => {
       // const fs = compiler.inputFileSystem
 
       result.then(res => {
+        const source = `module.exports = ${JSON.stringify(res)}`
+
         compilation.assets[`${this.optings.path + this.optings.filename}`] = {
           source () {
-            return `module.exports = ${JSON.stringify(res)}`
+            return source
           },
           size () {
-            return `module.exports = ${JSON.stringify(res)}`.length
+            return source.length
           }
         }
 
@@ -124,6 +77,7 @@ class Translator {
             callback && callback(err)
           }
           console.log('翻译结果已导出');
+          result = null
           callback()
         })
       })
