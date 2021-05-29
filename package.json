@@ -1,6 +1,6 @@
 {
   "name": "bnuz-yjpj-translator",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "幼教评价国际化翻译插件",
   "main": "./src/index.js",
   "scripts": {

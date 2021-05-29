@@ -46,6 +46,7 @@ class Translator {
       }
 
       const patchs = diff(originSource, this.optings.source)
+      console.log(' patchs ---', patchs);
       result = doPatch(originSource, patchs)
 
     } else if (this.optings.source) {
@@ -58,20 +59,26 @@ class Translator {
 
     compiler.hooks.emit.tapAsync('yjpj_translator', (compilation, callback) => {
       // const fs = compiler.inputFileSystem
+      // console.log('result ---', result);
 
       result.then(res => {
+        // console.log('res', res);
+        if(!res) {
+          callback()
+          return
+        }
         const source = `module.exports = ${JSON.stringify(res)}`
 
-        compilation.assets[`${this.optings.path + this.optings.filename}`] = {
-          source () {
-            return source
-          },
-          size () {
-            return source.length
-          }
-        }
+        // compilation.assets[`${this.optings.path + this.optings.filename}`] = {
+        //   source () {
+        //     return source
+        //   },
+        //   size () {
+        //     return source.length
+        //   }
+        // }
 
-        writeFileRecursive(dir, `module.exports = ${JSON.stringify(res)}`, (err) => {
+        writeFileRecursive(dir, source, (err) => {
           if (err) {
             console.error('该文件不存在，重新创建失败！')
             callback && callback(err)

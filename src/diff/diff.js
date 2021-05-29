@@ -53,7 +53,8 @@ function walk(originSource, newSource, track = []) {
       walk(originSrc, newSrc, newTrack)
     }
     // 若新旧对象属性不同，则替换
-    else if(typeof originSrc !== newSrc) {
+    else if(typeof originSrc !== typeof newSrc) {
+      // console.log('originSrc', originSrc, 'newSrc', newSrc);
       patchs.push({
         source: newSrc,
         type: UPDATE,

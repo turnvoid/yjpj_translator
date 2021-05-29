@@ -39,6 +39,7 @@ function getTranslatedSource (source) {
       async () => {
         return new Promise((resolve, reject) => {
           translate(tItem.replace(/,/g, '\n'), 'zh', 'cht').then(res => {
+            if (!res || !res.trans_result) return []
             resolve(res.trans_result.map(item => item.dst))
           }).catch(err => reject(err))
         })
@@ -63,11 +64,11 @@ function getTranslatedSource (source) {
   return p
 }
 
-function mappingSource(source, arr, index = 0) {
+function mappingSource (source, arr, index = 0) {
   let keys = Object.keys(source)
 
-  for(let key of keys) {
-    if(typeof source[key] === 'object') {
+  for (let key of keys) {
+    if (typeof source[key] === 'object') {
       index = mappingSource(source[key], arr, index)
     }
     else {
@@ -78,27 +79,27 @@ function mappingSource(source, arr, index = 0) {
   return index
 }
 
-  /**
-   * 执行异步事件队列
-   * @param {Array} taskList 
-   * @returns Array
-   */
-  const extecue = async (taskList = []) => {
-    const resultList = []
+/**
+ * 执行异步事件队列
+ * @param {Array} taskList 
+ * @returns Array
+ */
+const extecue = async (taskList = []) => {
+  const resultList = []
 
-    let task
-    for (task of taskList) {
-      try {
-        resultList.push(await task())
-      } catch (err) {
-        console.error(err)
-        resultList.push(null)
-      }
+  let task
+  for (task of taskList) {
+    try {
+      resultList.push(await task())
+    } catch (err) {
+      console.error(err)
+      resultList.push(null)
     }
-
-    return resultList
   }
 
-  module.exports = {
-    getTranslatedSource
-  }
+  return resultList
+}
+
+module.exports = {
+  getTranslatedSource
+}

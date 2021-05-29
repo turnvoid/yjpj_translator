@@ -16,6 +16,11 @@ function doPatch(origin, patchs) {
     rejectPromise = reject
   })
 
+  if(patchs.length === 0) {
+    resolvePromise(null)
+    return p
+  }
+
   for(let i = 0; i < patchs.length; i++ ) {
     if(patchs[i].source) {
       translate[i] = patchs[i].source
