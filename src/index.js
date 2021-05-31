@@ -13,6 +13,7 @@ class Translator {
     if (optings || (optings = {})) {
       optings.path = optings.path || 'translated'
       optings.filename = './' + (optings.filename || 'main.js')
+      optings.isJsFile = optings.filename.test(/.*\.js$/)
     }
     this.optings = optings
   }
@@ -31,6 +32,12 @@ class Translator {
         let data = fs.readFileSync(dir, 'utf-8')
         data = data.replace(/ /g, '').replace(/^module\.exports=/, '')
         originSource = JSON.parse(data)
+      }
+      else {
+        console.log('文件不存在，已创建');
+        fs.writeFile(dir, null, { flag: 'w' }, err => {
+          console.error(err);
+        })
       }
     } catch (err) {
       console.error(err);
@@ -58,25 +65,15 @@ class Translator {
     }
 
     compiler.hooks.emit.tapAsync('yjpj_translator', (compilation, callback) => {
-      // const fs = compiler.inputFileSystem
-      // console.log('result ---', result);
 
       result.then(res => {
-        // console.log('res', res);
-        if(!res) {
+        if (!res) {
           callback()
           return
         }
-        const source = `module.exports = ${JSON.stringify(res)}`
 
-        // compilation.assets[`${this.optings.path + this.optings.filename}`] = {
-        //   source () {
-        //     return source
-        //   },
-        //   size () {
-        //     return source.length
-        //   }
-        // }
+        const source = this.optings.isJsFile ?
+          `module.exports = ${JSON.stringify(res)}` : JSON.stringify(res)
 
         writeFileRecursive(dir, source, (err) => {
           if (err) {
